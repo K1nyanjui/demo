@@ -1,0 +1,60 @@
+import React, { useEffect, useState } from "react";
+
+const mockSongs = [
+  { id: 1, title: "Ocean Beats", artist: "DJ Wave", price: 2 },
+  { id: 2, title: "Fire Flow", artist: "MC Blaze", price: 3 },
+  { id: 3, title: "Silent Sky", artist: "Luna Tone", price: 1.5 }
+];
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [songs, setSongs] = useState(mockSongs);
+
+  const loginWithPi = async () => {
+    if (!window.Pi) {
+      alert("Pi SDK not ready");
+      return;
+    }
+
+    try {
+      const scopes = ["username", "payments"];
+      const auth = await window.Pi.authenticate(scopes, handleIncompletePayment);
+      console.log("✅ Authenticated:", auth);
+      setUser(auth.user);
+    } catch (error) {
+      console.error("❌ Login failed", error);
+    }
+  };
+
+  const handleIncompletePayment = (payment) => {
+    console.log("⚠️ Found incomplete payment", payment);
+  };
+
+  const handleBuy = (song) => {
+    alert(`Here you would initiate Pi payment for "${song.title}"`);
+    // You will add Pi.createPayment() here later
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>🎵 Music Market Place</h1>
+
+      {!user ? (
+        <button onClick={loginWithPi}>Login with Pi</button>
+      ) : (
+        <div>
+          <p>✅ Logged in as <strong>{user.username}</strong></p>
+
+          <h3>Available Songs:</h3>
+          {songs.map((song) => (
+            <div key={song.id} style={{ marginBottom: 12 }}>
+              <b>{song.title}</b> by {song.artist} - {song.price} π
+              <br />
+              <button onClick={() => handleBuy(song)}>Buy with Pi</button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
